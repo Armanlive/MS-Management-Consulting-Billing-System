@@ -1,0 +1,72 @@
+# ============================================================================
+# MS MANAGEMENT CONSULTING BILLING SYSTEM — GIT IGNORE CONFIGURATION
+# ============================================================================
+
+# 1. Environment Variables & Secret Credentials (CRITICAL - NEVER COMMIT)
+.env
+.env.*
+.env*.local
+*.env
+*.env.*
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+!.env.example
+
+# 2. Dependency Directories
+node_modules/
+jspm_packages/
+
+# 3. Production & Build Outputs
+dist/
+dist-ssr/
+build/
+*.zip
+!release/ms-billing-system-client-v1.0.0.zip
+*.tar.gz
+*.tgz
+
+# 4. Vercel & Cloud CLI Artifacts
+.vercel/
+
+# 5. Logs & Debugging Records
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# 6. Test Coverage & Scratch Artifacts
+coverage/
+.nyc_output/
+dump.mjs
+scratch/
+.temp*
+.clean-room-test/
+.clean-room-test*
+
+# 7. Certificates, Private Keys & Local Database Dumps
+*.pem
+*.key
+*.cert
+*.crt
+*.pfx
+*.p12
+*.sql.bak
+*.backup
+*.dump
+
+# 8. Editor, IDE & Operating System Files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

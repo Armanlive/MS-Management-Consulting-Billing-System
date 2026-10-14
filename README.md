@@ -1,24 +1,127 @@
-# MS Consulting Billing — Starter v1
+# MS Management Consulting — Billing & Financial Management System
 
-Light-theme HTML/CSS/vanilla JS billing portal with Supabase Auth/Postgres and Vercel serverless signup protection.
+A production-grade, secure, multi-tenant billing and invoice management web application engineered for management consulting practices in India. Built with clean HTML5, CSS3, ES Modules, and modern serverless PostgreSQL architecture.
 
-## Setup
-1. Open Supabase project `ilnvomvotfmqaiurkhde`. Back up database; review and run `supabase/schema.sql` in SQL Editor. It creates tables, triggers and RLS policies. **Do not run blindly against a populated database.**
-2. In Supabase Authentication > Providers, disable public email signup. Server-side invite registration uses the Admin API.
-3. Create `.env` from `.env.example`. Get publishable/anon key from Supabase API settings. Keep `SUPABASE_SERVICE_ROLE_KEY` ONLY in server environment; never expose in frontend or commit.
-4. `npm install && npm run dev` for frontend. Vercel serverless functions run after deployment (or via `vercel dev`).
-5. Connect GitHub repo to Vercel. Framework: Vite, build: `npm run build`, output: `dist`. Add `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` to Vercel Environment Variables.
-6. Supabase Auth URL Configuration: set Site URL to deployed Vercel URL, add redirect URL(s).
-7. **Bootstrap first admin manually and securely:** In Supabase Auth dashboard create boss user with strong temporary password, then run `insert into public.profiles(id,email,role) values('<actual-auth-user-uuid>','<actual-email>','admin');` in SQL editor. Never expose admin password in chat. Sign in and create invite codes from Settings.
+---
 
-## Features
-Dashboard, customer master, invoice creation, Indian GST auto calculation, invoice numbering, invoice PDF download, history/edit/duplicate, payment recording/status, company settings, role-based access and invite-based signup.
+## Key Highlights
 
-## Known production hardening before real financial use
-- Invoice PDF currently uses a clean A4 layout; add uploaded signature and verified business details before issuing legal invoices.
-- `invoice_sequence` is global, not per financial year; numbering format includes calendar year. Agree on numbering rules before production.
-- Database currently allows any authenticated staff to edit invoice values and customer records; consider stricter role policy, approval workflow and immutable audit log.
-- `status` is client-writable through the invoice update RLS; enforce status server-side for production.
-- Payment overcollection should be blocked server-side. Add atomic payment recording and refunds before production.
-- Concurrent use of the same invite may race; implement atomic redeem RPC with a unique consumption guarantee and API rate limiting before opening signup publicly.
-- Browser preview mode shows empty example dashboard without connecting to real data. No database deployment was performed by creating this ZIP.
+- **Legal Entity Branding**: Independent legal issuer name and client-facing entity configuration.
+- **Indian Financial Year Model**: Native April 1 to March 31 cycle (e.g., FY 2026-27).
+- **Automated GST Rule Engine**: Place of Supply intelligence — Intrastate (Karnataka, Code 29) CGST + SGST (50/50 split); Interstate IGST.
+- **Indian Number to Words**: Statutory invoice currency formatting (Crores, Lakhs, Thousands, Hundreds, and Paise).
+- **Dual Invoice Lifecycle**:
+  - **Draft Invoices**: Independent sequential numbering (`DRAFT-2026-27-0001`), fully editable, with distinct visual watermarks.
+  - **Tax Invoices**: Immutable sequential numbering (`MS/2026-27/01`), statutory lock on line items and totals, cancellation workflows.
+- **Enterprise RBAC & Governance**: Administrator vs Staff privileges, last-administrator protection, advisory lock concurrency guards, and single-use cryptographic invitation onboarding.
+- **Tamper-Proof Audit Trail**: All privileged financial actions and administration events are logged to PostgreSQL with immutable attribution.
+- **GST-Compliant PDF Engine**: Vector PDF generation with bank remittance blocks, authorized signature, and GST breakdown.
+
+---
+
+## Architecture & Technology Stack
+
+| Component | Technology | Description |
+|---|---|---|
+| **Frontend** | HTML5, CSS3, Vanilla JS (ES Modules), Vite | High-performance, lightweight SPA without framework bloat |
+| **Styling** | Custom Vanilla CSS Design System | Responsive layout, dark/light themes, and collapsible Icon Rail |
+| **Charts** | Chart.js | Visual KPI trends, collections, and outstanding receivables |
+| **PDF Generation** | jsPDF, jsPDF-AutoTable | Client-side pixel-perfect A4 tax invoice document rendering |
+| **Backend & APIs** | Vercel Serverless Functions (Node.js) | Secure fail-closed endpoints for RBAC, invitations, and audit logging |
+| **Database & Auth** | Supabase (PostgreSQL 15) | Relational integrity, Row Level Security (RLS), atomic RPCs |
+
+---
+
+## Project Structure
+
+```
+├── api/                  # Secure serverless API functions
+│   ├── _utils.js         # Shared rate limiter, auth validation & client factory
+│   ├── audit.js          # Tamper-proof audit ledger querying endpoint
+│   ├── bootstrap-admin.js# Operator-controlled initial admin bootstrap API
+│   ├── invite.js         # Cryptographic team invitation management
+│   ├── invoices.js       # Administrative invoice deletion and audit logging
+│   ├── payments.js       # Transactional payment editing and deletion
+│   ├── register.js       # Single-use invitation code redemption
+│   └── users.js          # Team directory, role updates & session revocation
+├── assets/               # Company branding assets and signatures
+├── public/               # Static public assets
+├── scripts/              # Operator CLI tools
+│   ├── bootstrap-admin.js# Interactive primary administrator bootstrap CLI
+│   └── package-client.js # Allowlist-based secure client release packager
+├── supabase/             # PostgreSQL database schemas
+│   ├── schema.sql        # Comprehensive single-run production schema
+│   └── migrations/       # Timestamped incremental migration scripts
+├── tests/                # Automated verification suites (81/81 passing)
+├── index.html            # Application entrypoint
+├── src.js                # Core client application & state management
+├── style.css             # Unified application styles and theme variables
+├── vercel.json           # Vercel SPA routing and serverless function rewrite rules
+├── vite.config.js        # Vite bundling and development API middleware
+├── .env.example          # Environment variable template with placeholders
+├── CLIENT_SETUP_GUIDE.md # End-to-end client deployment and configuration guide
+└── package.json          # Project configuration, scripts, and dependencies
+```
+
+---
+
+## Quick Start (Local Development)
+
+### 1. Install Dependencies
+```bash
+npm install
+```
+
+### 2. Configure Local Environment
+```bash
+cp .env.example .env
+```
+Populate `.env` with your Supabase credentials:
+```env
+VITE_SUPABASE_URL=https://your-project-id.supabase.co
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_publishable_key
+SUPABASE_URL=https://your-project-id.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_secret
+```
+
+### 3. Initialize Database & Admin
+1. Execute `supabase/schema.sql` in your Supabase SQL Editor.
+2. Run the bootstrap CLI to provision the initial Administrator:
+```bash
+npm run bootstrap:admin
+```
+
+### 4. Start Development Server
+```bash
+npm run dev
+```
+Navigate to `http://localhost:3005` in your browser.
+
+---
+
+## Testing & Quality Assurance
+
+Run the automated test suite verifying security, RBAC, financial math, and language standards:
+
+```bash
+npm test
+```
+
+Build the production distribution bundle:
+```bash
+npm run build
+```
+
+---
+
+## Production Deployment
+
+For complete, step-by-step instructions on deploying the application to your own **GitHub** repository, **Vercel** account, and **Supabase** instance, consult the comprehensive guide:
+
+👉 **[CLIENT_SETUP_GUIDE.md](./CLIENT_SETUP_GUIDE.md)**
+
+---
+
+## License & Ownership
+
+Proprietary commercial software prepared for MS Management Consulting. All rights reserved.

@@ -1,1 +1,28 @@
-{"name":"ms-consulting-billing","version":"1.0.0","private":true,"type":"module","scripts":{"dev":"vite --host 0.0.0.0","build":"vite build","preview":"vite preview"},"dependencies":{"@supabase/supabase-js":"^2.49.0","vite":"^6.2.0","jspdf":"^2.5.2","jspdf-autotable":"^3.8.4","lucide":"^0.468.0"},"devDependencies":{}}
+{
+  "name": "ms-consulting-billing",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 3005",
+    "build": "node --max-old-space-size=512 --max-semi-space-size=8 ./node_modules/vite/bin/vite.js build",
+    "preview": "vite preview --host 0.0.0.0 --port 3005",
+    "test": "node tests/security_and_integrity.test.js && node tests/language_and_content_audit.test.js && node tests/enterprise_rbac_and_admin_control.test.js && node tests/billing_authorization_and_lifecycle.test.js",
+    "bootstrap:admin": "node scripts/bootstrap-admin.js",
+    "package:client": "node scripts/package-client.js"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.49.0",
+    "chart.js": "^4.5.1",
+    "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4",
+    "lucide": "^0.468.0",
+    "vite": "^6.2.0"
+  },
+  "devDependencies": {
+    "pg-mem": "^3.0.14"
+  }
+}

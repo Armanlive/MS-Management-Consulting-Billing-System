@@ -1,0 +1,8 @@
+{
+  "name": "MS Consulting Billing",
+  "description": "MS Management Consulting Billing Management System for invoices, customers, payments, and GST compliance.",
+  "permissions": [],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
